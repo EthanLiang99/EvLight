@@ -1,0 +1,59 @@
+JOBS: 8
+TEST_ONLY: false
+LOG_INTERVAL: 20
+TRAIN_BATCH_SIZE: 8
+VAL_BATCH_SIZE: 8
+START_EPOCH: 0
+END_EPOCH: 80
+VAL_INTERVAL: 1
+MODEL_SANING_INTERVAL: 5
+MIX_PRECISION: true
+RESUME:
+  PATH: 
+  TYPE:
+  SET_EPOCH: false
+SEED: 2333
+IS_CUDA: true
+OPTIMIZER:
+  NAME: "Adam"
+  LR: 0.0002
+  LR_SCHEDULER: cosine
+  end_epoch: 100
+  weight_decay: 0
+LOSS:
+  - NAME: normal-light-reconstructed-loss
+    WEIGHT: 1
+  - NAME: normal-light-perceptual-loss
+    WEIGHT: 1
+METRICS:
+  - NAME: SSIM
+    input_is_linear: false
+  - NAME: PSNR
+    input_is_linear: false
+  - NAME: PSNR_star
+    input_is_linear: false
+DATASET:
+  NAME: get_egsdsd_withNE_dataset
+  root: "" # file path of dataset
+  voxel_grid_channel: 32
+  img_height: 260
+  img_width: 346
+  is_split_event: true
+MODEL:
+  NAME: egretinex
+  IlluNet:
+    illumiantion_level: 1
+    base_chs: 48
+    voxel_grid_channel: 32
+    illumiantion_set: [0]
+  ImageNet:
+    snr_factor: 0.5 # stop using regional img feature to avoid overfitting in illumination
+    voxel_grid_channel: 32
+    base_chs: 48
+    snr_threshold_list: [0.6, 0.6, 0.6]
+  
+
+VISUALIZATION:
+  folder: ./epoch-best
+  tag: 0001
+  intermediate_visualization: false

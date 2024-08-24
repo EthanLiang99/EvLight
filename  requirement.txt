@@ -1,0 +1,17 @@
+absl-py
+addict
+easydict
+einops
+h5py
+lpips
+matplotlib
+ml-collections
+numpy
+opencv-python
+pandas
+scikit-image
+scipy
+torch==1.12.1
+torchvision==0.13.1
+tqdm
+pudb
