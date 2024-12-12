@@ -5,14 +5,15 @@
 ## News :loudspeaker:
 
 - **2024.04.06**: We plan to release our dataset and code no later than July.
-- **2024.06.15**: Our dataset and synthetic event dataset of SDSD are released :)
-- **2024.08.24**: Our code is released :)
+- **2024.06.15**: Our dataset and synthetic event dataset of SDSD are released.
+- **2024.08.24**: Our code is released. 
+- **2024.12.12**: Normal-light event streams are released.
 
 ## TODO list :pushpin:
 - ~The release of synthetic event dataset of SDSD~ <br>
 - ~The release of our collected SDE dataset~ <br>
 - ~The release of our code~ <br>
-- The release of split normal-light event streams and the whole normal-light event streams
+- ~The release of split normal-light event streams and the whole normal-light event streams~ <br>
 
 ## Usage :computer:
 **Dependency**
@@ -78,6 +79,9 @@ The arrangement of the dataset is
             | 
             ----xxx.png (normal-light RGB frame) 
 ```
+
+We have uploaded the normal-light event stream, whose format is the same as the low-light version. Please feel free to check the link: [Onedrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/EtFRcH270mlNmXjgECTgrAgBsUA-qIRTuSzRtoNuGLa38g). 
+*Since our work focuses on the consistency between normal-light and low-light images, we have not yet checked the consistency between normal-light and low-light event streams.*
 
 ## SDSD dataset :file_folder:
 Unlike the original configuration in [SDSD](https://github.com/dvlab-research/SDSD), our project incorporates events as an additional input. We have provided the processed event data for this purpose. To prepare the data, we downsampled the original videos to the resolution of the DAVIS346 event camera (346x260) and inputted these resized images into the [v2e](https://github.com/SensorsINI/v2e) event simulator. This simulator uses its default model to synthesize noisy event streams.
