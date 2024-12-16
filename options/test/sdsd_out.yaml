@@ -33,7 +33,7 @@ METRICS:
   - NAME: PSNR_star
     input_is_linear: false
 DATASET:
-  NAME: get_egsdsd_out_withNE_dataset
+  NAME: get_egsdsd_withNE_dataset
   root: "" # file path of dataset
   voxel_grid_channel: 32
   img_height: 260
