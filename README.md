@@ -1,6 +1,6 @@
 # Towards Robust Event-guided Low-Light Image Enhancement: A Large-Scale Real-World Event-Image Dataset and Novel Approach (CVPR24 Oral)
 
-[![arXiv](https://img.shields.io/badge/arXiv-2404.00834-B31B1B.svg)](https://arxiv.org/abs/2404.00834)
+[[Paper]](https://arxiv.org/abs/2404.00834) [[Project Page](https://vlislab22.github.io/eg-lowlight/)]
 
 ## News :loudspeaker:
 
