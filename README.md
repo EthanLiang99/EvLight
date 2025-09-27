@@ -4,10 +4,11 @@
 
 ## News :loudspeaker:
 
-- **2024.04.06**: We plan to release our dataset and code no later than July.
-- **2024.06.15**: Our dataset and synthetic event dataset of SDSD are released.
-- **2024.08.24**: Our code is released. 
+- **2025.09.23**: Our extention paper "Evlight++: Low-light video enhancement with an event camera: A large-scale real-world dataset, novel method, and more" has been accepted by IEEE TPAMI!
 - **2024.12.12**: Normal-light event streams are released.
+- **2024.08.24**: Our code is released. 
+- **2024.06.15**: Our dataset and synthetic event dataset of SDSD are released.
+- **2024.04.06**: We plan to release our dataset and code no later than July.
 
 ## TODO list :pushpin:
 - ~The release of synthetic event dataset of SDSD~ <br>
