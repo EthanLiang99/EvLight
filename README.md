@@ -1,119 +1,140 @@
-# Towards Robust Event-guided Low-Light Image Enhancement: A Large-Scale Real-World Event-Image Dataset and Novel Approach (CVPR24 Oral)
+<div align="center">
 
-[[Paper]](https://arxiv.org/abs/2404.00834) [[Project Page](https://vlislab22.github.io/eg-lowlight/)]
+# Towards Robust Event-guided Low-Light Image Enhancement: <br> A Large-Scale Real-World Event-Image Dataset and Novel Approach 
 
-## News :loudspeaker:
+[**CVPR 2024 Oral**]
 
-- **2025.09.23**: Our extention paper "Evlight++: Low-light video enhancement with an event camera: A large-scale real-world dataset, novel method, and more" has been accepted by IEEE TPAMI!
-- **2024.12.12**: Normal-light event streams are released.
-- **2024.08.24**: Our code is released. 
-- **2024.06.15**: Our dataset and synthetic event dataset of SDSD are released.
-- **2024.04.06**: We plan to release our dataset and code no later than July.
+<div>
+    <a href="[https://arxiv.org/abs/2404.00834](https://arxiv.org/abs/2404.00834)" target="_blank">
+        <img src="[https://img.shields.io/badge/Paper-arXiv-red?style=flat-square](https://img.shields.io/badge/Paper-arXiv-red?style=flat-square)" alt="Paper">
+    </a>
+    <a href="[https://vlislab22.github.io/eg-lowlight/](https://vlislab22.github.io/eg-lowlight/)" target="_blank">
+        <img src="[https://img.shields.io/badge/Project-Page-blue?style=flat-square](https://img.shields.io/badge/Project-Page-blue?style=flat-square)" alt="Project Page">
+    </a>
+    <a href="[https://github.com/vlislab22/eg-lowlight](https://github.com/vlislab22/eg-lowlight)" target="_blank">
+        <img src="[https://img.shields.io/github/stars/vlislab22/eg-lowlight?style=social](https://img.shields.io/github/stars/vlislab22/eg-lowlight?style=social)" alt="GitHub Stars">
+    </a>
+</div>
 
-## TODO list :pushpin:
-- ~The release of synthetic event dataset of SDSD~ <br>
-- ~The release of our collected SDE dataset~ <br>
-- ~The release of our code~ <br>
-- ~The release of split normal-light event streams and the whole normal-light event streams~ <br>
+<br>
 
-## Usage :computer:
-**Dependency**
+</div>
 
+## :loudspeaker: News
+
+- **[2025.09.23]** :tada: Our extension paper **"Evlight++"** has been accepted by **IEEE TPAMI**!
+- **[2024.12.12]** Normal-light event streams are released.
+- **[2024.08.24]** Source code is released.
+- **[2024.06.15]** SDE dataset and synthetic event dataset of SDSD are released.
+- **[2024.04.06]** Dataset and code release plan announced.
+
+## :pushpin: Roadmap & Status
+
+- [x] Release of synthetic event dataset of SDSD
+- [x] Release of our collected SDE dataset
+- [x] Release of source code
+- [x] Release of split normal-light event streams and the whole normal-light event streams
+
+---
+
+## :file_folder: Dataset Preparation
+
+### 1. SDE Dataset (Real-World)
+The **SDE dataset** contains **91** image+event paired sequences (43 indoor, 48 outdoor) captured with a DAVIS346.
+* **Resolution**: 346 × 260
+* **Split**: 76 training sequences, 15 testing sequences.
+
+| Dataset Content | Baidu Netdisk | OneDrive | Password |
+| :--- | :---: | :---: | :---: |
+| **Aligned Dataset** | [Link](https://pan.baidu.com/s/1ad56IgSmCwDhorhwAwFlog?pwd=w7qe) | [Link](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/Ep_8Acz6cd1GjwtmEjAG0w8BkQsBWDjyHf9_56XSLTNLSw) | `w7qe` |
+| **Normal-Light Events** | - | [Link](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/EtFRcH270mlNmXjgECTgrAgBsUA-qIRTuSzRtoNuGLa38g) | - |
+
+> **Note**: We focus on the consistency between normal/low-light images. Consistency between event streams has not yet been fully verified.
+
+<details>
+<summary>Click to view SDE Directory Structure</summary>
+
+```text
+--indoor/outdoor 
+├── test 
+│   ├── pair1 
+│   │   ├── low 
+│   │   │   ├── xxx.png (low-light RGB frame) 
+│   │   │   ├── xxx.npz (split low-light event streams) 
+│   │   │   └── lowlight_event.npz (the whole low-light event stream) 
+│   │   └── normal 
+│   │       └── xxx.png (normal-light RGB frame) 
+└── train 
+    └── pair1 
+        ├── low 
+        │   ├── xxx.png 
+        │   ├── xxx.npz 
+        │   └── lowlight_event.npz 
+        └── normal 
+            └── xxx.png 
 ```
+</details>
+
+### 2. SDSD Dataset (Synthetic Events)
+We incorporated events into the [SDSD](https://github.com/dvlab-research/SDSD) dataset using the [v2e](https://github.com/SensorsINI/v2e) simulator (resized to 346x260).
+
+| Dataset Content | Baidu Netdisk | OneDrive | Password |
+| :--- | :---: | :---: | :---: |
+| **Processed Events** | [Link](https://pan.baidu.com/s/1b8ZXfHSzfWg0q0o4SgDcUQ?pwd=wrjv) | [Link](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/EsrS4qhMC_lFv3JgaGQ0nM8BG2GYHII_mBn2rYLhOpmN3g) | `wrjv` |
+
+> :warning: **Notice**:
+> 1. Please download the latest version (we fixed previous issues).
+> 2. We recommend skipping the first/last 3 split event files due to sparse events caused by slow motion.
+
+<details>
+<summary>Click to view SDSD Directory Structure</summary>
+
+```text
+--indoor/outdoor 
+├── test 
+│   └── pair1 
+│       ├── low (split low-light event streams for each RGB frame) 
+│       └── low_event (whole synthetic low-light event stream) 
+└── train 
+    └── pair1 
+        ├── low 
+        └── low_event 
+```
+</details>
+
+---
+
+## :computer: Usage
+
+### 1. Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-**Test**
+### 2. Pretrained Models
+Download models from **[Baidu Pan](https://pan.baidu.com/s/1w9n1cl1Rom0GjVc3OOuFPw?pwd=8agv)** (pwd: `8agv`) or **[OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/EiRk3QVTMttJmIIwvUoiwooB_0-tnlJ4yBVxzi4NxeLdmw)**.
 
-- Download pretrained models ([baidu pan](https://pan.baidu.com/s/1w9n1cl1Rom0GjVc3OOuFPw?pwd=8agv) (pwd: 8agv) and [Onedrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/EiRk3QVTMttJmIIwvUoiwooB_0-tnlJ4yBVxzi4NxeLdmw)) 
-
-- Change the path to the models and dataset in options/test/xxx.yaml .
-
-```
-sh options/test/xxx.sh
-```
-
-**Train**
-
-- Change the path to dataset in options/train/xxx.yaml .
-
-```
+### 3. Training
+1. Modify the dataset path in `options/train/xxx.yaml`.
+2. Run the training script:
+```bash
 sh options/train/xxx.sh
 ```
 
-
-## SDE dataset :file_folder:
-SED dataset contains 91 image+event paired sequences (43 indoor sequences and 48 outdoor sequences) captured with a DAVIS346 event camera which outputs RGB images and events with the resolution of 346*260.
-For all collected sequences, 76 sequences are randomly selected for training, and 15 sequences are for testing. 
-
-You can download the aglined dataset for experiments using the following link: [baidu pan](https://pan.baidu.com/s/1ad56IgSmCwDhorhwAwFlog?pwd=w7qe) (pwd: w7qe) and [Onedrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/Ep_8Acz6cd1GjwtmEjAG0w8BkQsBWDjyHf9_56XSLTNLSw).
-
-The arrangement of the dataset is
-```
---indoor/outdoor 
-| 
-----test 
-|   | 
-|   ----pair1 
-|       | 
-|       ----low 
-|       |   | 
-|       |   ----xxx.png (low-light RGB frame) 
-|       |   ----xxx.npz (split low-light event streams) 
-|       |   ----lowligt_event.npz (the whole low-light event stream) 
-|       | 
-|       ----normal 
-|           | 
-|           ----xxx.png (normal-light RGB frame) 
-| 
-----train 
-    | 
-    ----pair1 
-        | 
-        ----low 
-        |   | 
-        |   ----xxx.png (low-light RGB frame) 
-        |   ----xxx.npz (split low-light event streams) 
-        |   ----lowligt_event.npz (the whole low-light event stream) 
-        | 
-        ----normal 
-            | 
-            ----xxx.png (normal-light RGB frame) 
+### 4. Testing
+1. Modify the model and dataset paths in `options/test/xxx.yaml`.
+2. Run the test script:
+```bash
+sh options/test/xxx.sh
 ```
 
-We have uploaded the normal-light event stream, whose format is the same as the low-light version. Please feel free to check the link: [Onedrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/EtFRcH270mlNmXjgECTgrAgBsUA-qIRTuSzRtoNuGLa38g). 
-*Since our work focuses on the consistency between normal-light and low-light images, we have not yet checked the consistency between normal-light and low-light event streams.*
+---
 
-## SDSD dataset :file_folder:
-Unlike the original configuration in [SDSD](https://github.com/dvlab-research/SDSD), our project incorporates events as an additional input. We have provided the processed event data for this purpose. To prepare the data, we downsampled the original videos to the resolution of the DAVIS346 event camera (346x260) and inputted these resized images into the [v2e](https://github.com/SensorsINI/v2e) event simulator. This simulator uses its default model to synthesize noisy event streams.
+## :mortar_board: Citation
 
-You can download the processed event dataset for experiments using the following link: [baidu pan](https://pan.baidu.com/s/1b8ZXfHSzfWg0q0o4SgDcUQ?pwd=wrjv) (pwd: wrjv) and [Onedrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/EsrS4qhMC_lFv3JgaGQ0nM8BG2GYHII_mBn2rYLhOpmN3g). *We fix the problem in the SDSD out dataset, pls download the latest version!*
+If this work is helpful for your research, please consider citing:
 
-*Due to slow motion at the beginning and end of videos, the generated events may be sparse. Therefore, we recommend skipping the first three and last three split event files.*
-
-The arrangement of the dataset is
-```
---indoor/outdoor 
-| 
-----test 
-|   | 
-|   ----pair1 
-|       | 
-|       ----low (the split low-light event streams for each RGB frame) 
-|       ----low_event (the whole synthetic low-light event stream) 
-| 
-----train 
-    | 
-    ----pair1 
-        | 
-        ----low (the split low-light event streams for each RGB frame) 
-        ----low_event (the whole synthetic low-light event stream) 
-```
-
-
-## Citations :mortar_board:
-If this work is helpful for your research, please consider citing the following BibTeX entry.
-```
+```bibtex
 @inproceedings{liang2024towards,
   title={Towards Robust Event-guided Low-Light Image Enhancement: A Large-Scale Real-World Event-Image Dataset and Novel Approach},
   author={Liang, Guoqiang and Chen, Kanghao and Li, Hangyu and Lu, Yunfan and Wang, Lin},
@@ -123,6 +144,5 @@ If this work is helpful for your research, please consider citing the following 
 }
 ```
 
-
-## Acknowledgment:
-Thanks to these open source projects: [INR-Event-VSR](https://github.com/yunfanLu/INR-Event-VSR) and [Retinexformer](https://github.com/caiyuanhao1998/Retinexformer).
+## :heart: Acknowledgment
+We thank the authors of [INR-Event-VSR](https://github.com/yunfanLu/INR-Event-VSR) and [Retinexformer](https://github.com/caiyuanhao1998/Retinexformer) for their open-source contributions.
