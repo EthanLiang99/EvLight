@@ -4,19 +4,19 @@
 
 [**CVPR 2024 Oral**]
 
-<div align="center">
-
+<div>
     <a href="https://arxiv.org/abs/2404.00834" target="_blank">
         <img src="https://img.shields.io/badge/Paper-arXiv-red?style=flat-square" alt="Paper">
     </a>
-    
     <a href="https://vlislab22.github.io/eg-lowlight/" target="_blank">
         <img src="https://img.shields.io/badge/Project-Page-blue?style=flat-square" alt="Project Page">
     </a>
-    
-    <a href="https://github.com/vlislab22/eg-lowlight" target="_blank">
-        <img src="https://img.shields.io/github/stars/vlislab22/eg-lowlight?style=social" alt="GitHub Stars">
+    <a href="https://github.com/EthanLiang99/EvLight" target="_blank">
+        <img src="https://img.shields.io/github/stars/EthanLiang99/EvLight?style=social" alt="GitHub Stars">
     </a>
+</div>
+
+<br>
 
 </div>
 
