@@ -115,6 +115,8 @@ pip install -r requirements.txt
 ### 2. Pretrained Models
 Download models from **[Baidu Pan](https://pan.baidu.com/s/1w9n1cl1Rom0GjVc3OOuFPw?pwd=8agv)** (pwd: `8agv`) or **[OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/gliang041_connect_hkust-gz_edu_cn/EiRk3QVTMttJmIIwvUoiwooB_0-tnlJ4yBVxzi4NxeLdmw)**.
 
+Video-based checkpoints from **[Baidu Pan](https://pan.baidu.com/s/1CEznGOg__svhZD_N5SDpQA)** (pwd: `n1b7`) or **[OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/kchen879_connect_hkust-gz_edu_cn/IgBRTLwrw8GMRq3Qdnt2c67NAa5e1Yc-EDosBoE2o4NBmAM?e=5zpZTQ)**.
+
 ### 3. Training
 1. Modify the dataset path in `options/train/xxx.yaml`.
 2. Run the training script:
