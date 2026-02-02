@@ -1,0 +1,69 @@
+JOBS: 8
+TEST_ONLY: false
+LOG_INTERVAL: 20
+TRAIN_BATCH_SIZE: 2
+VAL_BATCH_SIZE: 1
+START_EPOCH: 0
+END_EPOCH: 60
+VAL_INTERVAL: 1
+MODEL_SANING_INTERVAL: 5
+MIX_PRECISION: true
+IS_VIDEO: true  # Video dataset flag
+RESUME:
+  PATH: "/path/to/sde_out_image_model.pth.tar"  # Set to image-trained model path, e.g.: "/path/to/sde_out_image_model.pth.tar"
+  TYPE:
+  SET_EPOCH: false
+SEED: 23334
+IS_CUDA: true
+OPTIMIZER:
+  NAME: "Adam"
+  LR: 0.0002
+  betas: [0.9, 0.999]
+  END_EPOCH: 60  # Required for some schedulers
+  LR_SCHEDULER: CosineAnnealingRestartCyclicLR
+  periods: [20, 20, 20]
+  restart_weights: [1, 1, 1]
+  eta_mins: [0.0001, 0.00001, 0.000001]
+  weight_decay: 0
+LOSS:
+  - NAME: normal-light-reconstructed-loss
+    WEIGHT: 1
+  - NAME: normal-light-perceptual-loss
+    WEIGHT: 0.5
+TEMPORAL_LOSS:
+  - NAME: frame-temporal-loss
+    WEIGHT: 1
+METRICS:
+  - NAME: SSIM
+    input_is_linear: false
+  - NAME: PSNR
+    input_is_linear: false
+  - NAME: PSNR_star
+    input_is_linear: false
+DATASET:
+  NAME: get_eglol_withNE_dataset_vid  # Use video dataset
+  root: "/path/to/your/dataset/"  # Set dataset path
+  voxel_grid_channel: 32
+  img_height: 260
+  img_width: 346
+  is_split_event: true
+  sequence_length: 16  # Video sequence length
+  step_size: 8  # Use step_size=8 (50% overlap) during training, align with egllie-release-vid
+MODEL:
+  NAME: egretinex
+  IlluNet:
+    illumiantion_level: 1
+    base_chs: 48
+    voxel_grid_channel: 32
+    illumiantion_set: [0]
+  ImageNet:
+    snr_factor: 3
+    voxel_grid_channel: 32
+    base_chs: 48
+    snr_threshold_list: [0.6, 0.5, 0.4]
+    use_rnn: true  # Enable RNN for video processing
+
+VISUALIZATION:
+  folder: ./epoch-best
+  tag: vid_train
+  intermediate_visualization: false

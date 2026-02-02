@@ -3,15 +3,18 @@ from torch.nn.modules.loss import _Loss
 
 from .image_loss import (
     L1CharbonnierLoss,
-    PerceptualLoss
+    PerceptualLoss,
+    frame_temporal_loss
 )
 
 
 def get_single_loss(config):
-    if config.NAME == "normal-light-reconstructed-loss": 
+    if config.NAME == "normal-light-reconstructed-loss":
         return L1CharbonnierLoss()
     elif config.NAME == "normal-light-perceptual-loss":
         return PerceptualLoss()
+    elif config.NAME == "frame-temporal-loss":
+        return frame_temporal_loss()
     else:
         raise ValueError(f"Unknown loss: {config.NAME}")
 

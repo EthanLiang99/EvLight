@@ -258,6 +258,119 @@ class egsdsd_withNE_dataset(Dataset):
 
         return sample
 
+    def getitem_with_seed(self, index, seed):
+        """For video sequence data loading, using specified random seed to maintain data augmentation consistency across sequence frames"""
+        # 1. load event
+        if (self.events is None) & (self.is_split_event == False):
+            # load event from the whole event file
+            if self.is_indoor:
+                events = np.load(self.low_event_file)
+            else:
+                events = np.load(self.normal_event_file)
+        elif self.is_split_event == True:
+            # load event from the split event file
+            try:
+                if self.is_indoor:
+                    events = np.load(os.path.join(self.low_img_folder, self.low_ev_list[index]))
+                else:
+                    events = np.load(os.path.join(self.noraml_img_folder, self.noraml_ev_list[index]))
+            except:
+                info(f"loading event error @ seq: {self.seq_name}")
+                info(f"loading event error @ index: {index}")
+                info(self.low_ev_list)
+        else:
+            raise ValueError('w/o assign event')
+
+        self.events = events["arr_0"]
+        self.events = self.events.astype(np.int32)
+        # detect loading problem
+        if (not self.events.size) or (self.events.shape[0] == 0):
+            if self.is_indoor:
+                events = np.load(os.path.join(self.low_img_folder, self.low_ev_list[index]))
+            else:
+                events = np.load(os.path.join(self.noraml_img_folder, self.noraml_ev_list[index]))
+            self.events = events["arr_0"]
+            self.events = self.events.astype(np.int32)
+            info(f"loading event error @ seq: {self.seq_name}")
+            info(f"loading event error @ index: {index}")
+        self.events_normal = self.events
+
+        if self.is_split_event == False:
+            try:
+                event_input = self.get_event(index)
+            except:
+                print(f"loading event error @ seq: {self.seq_name}")
+        else:
+            event_input = self.events
+
+        del events
+
+        # 2. load image & obtain illumination map prior
+        img_low = cv2.cvtColor(
+            cv2.imread(
+                os.path.join(self.low_img_folder, self.low_img_list[index])
+            ),
+            cv2.COLOR_BGR2RGB,
+        )
+        img_blur = cv2.blur(img_low, (5, 5))
+        img_low_illumination_map = self._illumiantion_map(img_low)
+        img_gt = cv2.cvtColor(
+            cv2.imread(
+                os.path.join(
+                    self.noraml_img_folder, self.noraml_img_list[index]
+                )
+            ),
+            cv2.COLOR_BGR2RGB,
+        )
+        # h, w -> h, w, c
+        img_low_illumination_map = np.expand_dims(
+            img_low_illumination_map / 255, axis=-1
+        )
+
+        event_input_torch = torch.from_numpy(event_input)
+
+        # Set random seed to maintain sequence consistency
+        random.seed(seed)
+        crop_img_list, crop_event_list = self._crop(
+            [
+                img_low,
+                img_gt,
+                img_low_illumination_map,
+                img_blur
+            ],
+            [event_input_torch],
+        )
+
+        input_voxel_grid_list = []
+        # obtain event voxel grid
+        for crop_event in crop_event_list:
+            crop_event[:, 0] = crop_event[:, 0] - crop_event[0, 0]
+            input_voxel_grid = self._generate_voxel_grid(crop_event)
+            input_voxel_grid_list.append(input_voxel_grid)
+
+        del (
+            event_input,
+            event_input_torch,
+            crop_event_list,
+        )
+
+        sample = {
+            "lowligt_image": crop_img_list[0] / 255,
+            "normalligt_image": crop_img_list[1] / 255,
+            "event_free": input_voxel_grid_list[0],
+            "lowlight_image_blur": crop_img_list[3] / 255,
+            "ill_list": [
+                crop_img_list[2],
+            ],
+            "seq_name": self.seq_name,
+            "frame_id": self.low_img_list[index].split(".")[0],
+        }
+
+        # reduce memory cost
+        self.events = None
+
+        return sample
+
 
 def get_egsdsd_withNE_dataset(
     dataset_root,

@@ -8,6 +8,7 @@ from easydict import EasyDict
 from pudb import set_trace
 
 from egllie.core.launch import ParallelLaunch
+from egllie.core.launch_vid import ParallelLaunchVid
 
 FLAGS = flags.FLAGS
 
@@ -68,7 +69,10 @@ def main(args):
     config = init_config(FLAGS.yaml_file)
     # 0. logging
     # 1. init launcher and run
-    launcher = ParallelLaunch(config)
+    if config.get('IS_VIDEO', False):
+        launcher = ParallelLaunchVid(config)
+    else:
+        launcher = ParallelLaunch(config)
     launcher.run()
 
 

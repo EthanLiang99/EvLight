@@ -1,15 +1,18 @@
 import torch.optim.lr_scheduler as lr_scheduler
 from torch.optim import SGD, Adam
+import egllie.core.lr_scheduler as lr_scheduler_2
 
 
 class Optimizer:
     def __init__(self, config, model):
         # 1. create optimizer
         if config.NAME == "Adam":
+            # Get betas parameter if exists, otherwise use default
+            betas = config.get('betas', (0.9, 0.999))
             if config.weight_decay is not None:
-                self.optimizer = Adam(model.parameters(), lr=config.LR, weight_decay=config.weight_decay)
+                self.optimizer = Adam(model.parameters(), lr=config.LR, betas=betas, weight_decay=config.weight_decay)
             else:
-                self.optimizer = Adam(model.parameters(), lr=config.LR)
+                self.optimizer = Adam(model.parameters(), lr=config.LR, betas=betas)
         elif config.NAME == "SGD":
             self.optimizer = SGD(model.parameters(), lr=config.LR)
         else:
@@ -23,7 +26,7 @@ class Optimizer:
             )
         elif config.LR_SCHEDULER == "cosine":
             self.scheduler = lr_scheduler.CosineAnnealingLR(
-                self.optimizer, T_max=config.end_epoch, eta_min=1e-8
+                self.optimizer, T_max=config.END_EPOCH, eta_min=1e-8
             )
         elif config.LR_SCHEDULER == "cosine_w":
             self.scheduler = lr_scheduler.CosineAnnealingWarmRestarts(
@@ -32,6 +35,10 @@ class Optimizer:
         elif config.LR_SCHEDULER == "onecycle":
             self.scheduler = lr_scheduler.OneCycleLR(
                 self.optimizer, max_lr=config.LR, total_steps=config.total_steps
+            )
+        elif config.LR_SCHEDULER == "CosineAnnealingRestartCyclicLR":
+            self.scheduler = lr_scheduler_2.CosineAnnealingRestartCyclicLR(
+                self.optimizer, config.periods, config.restart_weights, config.eta_mins
             )
         else:
             raise ValueError(f"Unknown Optimizer config: {config}")

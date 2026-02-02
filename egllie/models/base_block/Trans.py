@@ -3,6 +3,7 @@ import torch
 import torch.nn.functional as F
 from einops import rearrange
 from egllie.models.base_block.ScConv_block import ECAResidualBlock,CA_layer
+from egllie.models.base_block.submodules import RecurrentResidualLayer
 
 class SNR_enhance(nn.Module):
     def __init__(
@@ -194,13 +195,14 @@ class IGAB(nn.Module):
 
 class Unet_ReFormer(nn.Module):
     def __init__(
-        self, in_dim=3, out_dim=3, dim=31, level=2, num_blocks=[2, 4, 4], snr_depth_list=[2,4,6], snr_threshold_list=[0.5,0.5,0.5]
+        self, in_dim=3, out_dim=3, dim=31, level=2, num_blocks=[2, 4, 4], snr_depth_list=[2,4,6], snr_threshold_list=[0.5,0.5,0.5], use_rnn=False
     ):
         super(Unet_ReFormer, self).__init__()
         self.dim = dim
         self.level = level
         self.snr_threshold_list = snr_threshold_list
         self.snr_depth_list = snr_depth_list
+        self.use_rnn = use_rnn
 
         # Encoder
         self.encoder_layers = nn.ModuleList([])
@@ -241,28 +243,30 @@ class Unet_ReFormer(nn.Module):
         # Decoder
         self.decoder_layers = nn.ModuleList([])
         for i in range(level):
-            self.decoder_layers.append(
-                nn.ModuleList(
-                    [
-                        nn.ConvTranspose2d(
-                            dim_level,
-                            dim_level // 2,
-                            stride=2,
-                            kernel_size=2,
-                            padding=0,
-                            output_padding=0,
-                        ),
-                        nn.Conv2d(dim_level, dim_level // 2, 1, 1, bias=False),
-                        IGAB(
-                            dim=dim_level // 2,
-                            num_blocks=num_blocks[level - 1 - i],
-                            dim_head=dim,
-                            heads=(dim_level // 2) // dim,
-                        ),
-                        SNR_enhance(dim_level // 2,snr_threshold_list[level - 1 - i],snr_depth_list[level-1-i])
-                    ]
+            decoder_block = [
+                nn.ConvTranspose2d(
+                    dim_level,
+                    dim_level // 2,
+                    stride=2,
+                    kernel_size=2,
+                    padding=0,
+                    output_padding=0,
+                ),
+                nn.Conv2d(dim_level, dim_level // 2, 1, 1, bias=False),
+                IGAB(
+                    dim=dim_level // 2,
+                    num_blocks=num_blocks[level - 1 - i],
+                    dim_head=dim,
+                    heads=(dim_level // 2) // dim,
+                ),
+                SNR_enhance(dim_level // 2,snr_threshold_list[level - 1 - i],snr_depth_list[level-1-i])
+            ]
+            # If RNN is enabled, add RecurrentResidualLayer
+            if use_rnn:
+                decoder_block.append(
+                    RecurrentResidualLayer(dim_level//2, dim_level//2, recurrent_block_type='convgru')
                 )
-            )
+            self.decoder_layers.append(nn.ModuleList(decoder_block))
             dim_level //= 2
 
         # Output projection
@@ -270,6 +274,23 @@ class Unet_ReFormer(nn.Module):
 
         # activation function
         self.avg_pool = nn.AvgPool2d(kernel_size=2)
+
+        # RNN state management (for video processing)
+        if use_rnn:
+            self.states = [None] * (level + 1)
+            # ConvGRU for bottleneck layer (naming must match egllie-release-vid)
+            self.convGRU_2 = RecurrentResidualLayer(
+                dim * (2 ** level),
+                dim * (2 ** level),
+                recurrent_block_type='convgru'
+            )
+        else:
+            self.states = None
+
+    def reset_states(self):
+        """Reset RNN hidden states for processing new video sequences"""
+        if self.use_rnn and self.states is not None:
+            self.states = [None] * len(self.states)
         
 
 
@@ -306,12 +327,20 @@ class Unet_ReFormer(nn.Module):
 
         # Bottleneck
         fea_event_img = self.bottleneck_SNR(fea_img, SNR, fea_event_img,event_free)
+        # If RNN is enabled, use ConvGRU at bottleneck layer
+        if self.use_rnn:
+            fea_event_img, state_bottleneck = self.convGRU_2(fea_event_img, self.states[self.level])
+            self.states[self.level] = state_bottleneck
         fea_event_img = self.bottleneck(fea_event_img)
         
         # Decoder
-        for i, (FeaUpSample, Fusion, REIGAB, RESNR_enhance) in enumerate(
-            self.decoder_layers
-        ):
+        for i, decoder_modules in enumerate(self.decoder_layers):
+            # Unpack different number of modules based on whether RNN is enabled
+            if self.use_rnn:
+                FeaUpSample, Fusion, REIGAB, RESNR_enhance, RecurrentLayer = decoder_modules
+            else:
+                FeaUpSample, Fusion, REIGAB, RESNR_enhance = decoder_modules
+
             fea_event_img = FeaUpSample(fea_event_img)
             fea_event_img = Fusion(
                 torch.cat([fea_event_img, fea_event_img_encoder[self.level - 1 - i]], dim=1)
@@ -320,6 +349,12 @@ class Unet_ReFormer(nn.Module):
             fea_img = fea_img_list[self.level - 1 - i]
             event_free = event_free_list[self.level - 1 - i]
             fea_event_img = RESNR_enhance(fea_img, SNR, fea_event_img,event_free)
+
+            # If RNN is enabled, process with recurrent layers
+            if self.use_rnn:
+                fea_event_img, state_i = RecurrentLayer(fea_event_img, self.states[i])
+                self.states[i] = state_i
+
             fea_event_img = REIGAB(fea_event_img)
             
 

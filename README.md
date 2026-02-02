@@ -2,7 +2,7 @@
 
 # Towards Robust Event-guided Low-Light Image Enhancement: <br> A Large-Scale Real-World Event-Image Dataset and Novel Approach 
 
-[**CVPR 2024 Oral**]
+[**CVPR 2024 Oral & TPAMI 2025**]
 
 <div>
     <a href="https://arxiv.org/abs/2404.00834" target="_blank">
@@ -23,7 +23,7 @@
 
 ## :loudspeaker: News
 
-- **[2025.09.23]** :tada: Our extension paper **"Evlight++"** has been accepted by **IEEE TPAMI**!
+- **[2025.09.23]** :tada: Our extension paper **"EvLight++"** is now published in **IEEE TPAMI**! This work extends the original EvLight to **low-light video enhancement** with improved methodology and extensive applications (Source code is released).
 - **[2024.12.12]** Normal-light event streams are released.
 - **[2024.08.24]** Source code is released.
 - **[2024.06.15]** SDE dataset and synthetic event dataset of SDSD are released.
@@ -121,6 +121,7 @@ Download models from **[Baidu Pan](https://pan.baidu.com/s/1w9n1cl1Rom0GjVc3OOuF
 ```bash
 sh options/train/xxx.sh
 ```
+> For video enhancement, use the corresponding `*_vid.sh` scripts.
 
 ### 4. Testing
 1. Modify the model and dataset paths in `options/test/xxx.yaml`.
@@ -128,6 +129,7 @@ sh options/train/xxx.sh
 ```bash
 sh options/test/xxx.sh
 ```
+> For video enhancement, use the corresponding `*_vid.sh` scripts.
 
 ---
 
@@ -136,6 +138,18 @@ sh options/test/xxx.sh
 If this work is helpful for your research, please consider citing:
 
 ```bibtex
+@ARTICLE{11192751,
+  author={Chen, Kanghao and Liang, Guoqiang and Lu, Yunfan and Li, Hangyu and Wang, Lin},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  title={EvLight++: Low-Light Video Enhancement With an Event Camera: A Large-Scale Real-World Dataset, Novel Method, and More},
+  year={2026},
+  volume={48},
+  number={2},
+  pages={1608-1625},
+  keywords={Cameras;Videos;Semantic segmentation;Depth measurement;Feature extraction;Signal to noise ratio;Lighting;Semantics;Image color analysis;Training;Low light enhancement;high dynamic range;event camera;real-world dataset;downstream applications},
+  doi={10.1109/TPAMI.2025.3617801}
+}
+
 @inproceedings{liang2024towards,
   title={Towards Robust Event-guided Low-Light Image Enhancement: A Large-Scale Real-World Event-Image Dataset and Novel Approach},
   author={Liang, Guoqiang and Chen, Kanghao and Li, Hangyu and Lu, Yunfan and Wang, Lin},

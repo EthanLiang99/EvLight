@@ -39,7 +39,28 @@ class PerceptualLoss(_Loss):
         pred, gt = batch["pred"], batch["gt"]
         loss = self.lpips_loss(pred, gt, normalize=True).mean()
         return loss
-    
+
+
+class frame_temporal_loss(_Loss):
+    def __init__(self):
+        super(frame_temporal_loss, self).__init__()
+        self.eps = 1e-4
+
+    def forward(self, batch_list):
+        # stack the batch
+        x = torch.stack([b["pred"] for b in batch_list], dim=1)
+        y = torch.stack([b["gt"] for b in batch_list], dim=1)
+        # event = torch.stack([b["event"] for b in batch_list], dim=1)
+        pred_diff = x[:, 1:, :, :,:] - x[:, :-1, :, :,:]
+        gt_diff = y[:, 1:, :, :,:] - y[:, :-1, :, :,:]
+        diff = pred_diff - gt_diff
+        diff_sq = diff * diff
+        diff_sq = torch.mean(diff_sq, 2, True)
+        error = torch.sqrt(diff_sq + self.eps)
+        loss = torch.mean(error)
+
+        return loss
+
 
 
 class _PSNR(nn.Module):

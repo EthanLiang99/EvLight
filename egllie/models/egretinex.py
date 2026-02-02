@@ -87,7 +87,11 @@ class ImageEnhanceNet(nn.Module): #check
         )
 
 
-        self.Unet_ReFormer = Unet_ReFormer(dim=cfg.base_chs,snr_threshold_list=cfg.snr_threshold_list)
+        self.Unet_ReFormer = Unet_ReFormer(
+            dim=cfg.base_chs,
+            snr_threshold_list=cfg.snr_threshold_list,
+            use_rnn=cfg.get('use_rnn', False)  # Get use_rnn parameter from config
+        )
     
     def _snr_generate(self,low_img, low_img_blur): 
         """
@@ -148,6 +152,9 @@ class EgLlie(nn.Module):
         self.IllumiinationNet = IllumiinationNet(cfg.IlluNet)
         self.ImageEnhanceNet = ImageEnhanceNet(cfg.ImageNet)
 
+    def reset_states(self):
+        """Reset RNN hidden states during video processing"""
+        self.ImageEnhanceNet.Unet_ReFormer.reset_states()
 
     def forward(self, batch):
         batch["illumaintion"],batch['illu_feature'] = self.IllumiinationNet(batch)
